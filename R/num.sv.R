@@ -37,6 +37,10 @@ num.sv <- function(dat, mod,method=c("be","leek"),vfilter=NULL,B=20,seed=NULL) {
     dat = dat[ind,]
   }
   
+  if (dim(dat)[1] < 20){
+    stop(paste("The number of genes used in the analysis must be greater than or equal to 20, not <", dim(dat)[1], ">\n"))
+  }
+  
   method <- match.arg(method)
   if(method=="be"){
     if(!is.null(seed)){set.seed(seed)}
@@ -74,7 +78,7 @@ num.sv <- function(dat, mod,method=c("be","leek"),vfilter=NULL,B=20,seed=NULL) {
     rhat <- matrix(0,nrow=100,ncol=10)
     P <- (diag(dims[2])-mod %*% solve(t(mod) %*% mod) %*% t(mod))  
     for(j in 1:10){
-      dats <- dat[1:(j*n),]
+      dats <- dat[1:(j*n),, drop=FALSE]
       ee <- eigen(t(dats) %*% dats)
       sigbar <- ee$values[dims[2]]/(j*n)
       R <- dats %*% P
